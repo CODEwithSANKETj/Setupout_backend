@@ -3,7 +3,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "server.js" // Replace with your entry file
+      "dest": "server.js"
     }
   ]
 }
