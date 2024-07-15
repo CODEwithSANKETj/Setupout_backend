@@ -117,11 +117,11 @@ Train_Route.post('/api/trains/:train_id/book', UserMiddleware, async (req, res) 
 
         // Calculate starting seat number based on total capacity
         const total_seats = 100; // Assume total seats is 100
-        const available_seats = train_exists.seat_capacity + no_of_seats;
+        const available_seats = train_exists.seat_capacity
 
         // Calculate the first seat number to book
         const start_seat_number = total_seats - available_seats + 1;
-
+        
         // Calculate booked seat numbers
         const booked_seat_numbers = [];
         for (let i = 0; i < no_of_seats; i++) {
