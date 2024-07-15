@@ -74,6 +74,7 @@ Train_Route.get('/api/trains/availability', async (req, res) => {
     }
 });
 
+
 Train_Route.post('/api/trains/:train_id/book', UserMiddleware, async (req, res) => {
     const train_id = req.params.train_id;
     const user_id = req.user;
@@ -226,7 +227,17 @@ Train_Route.put('/api/train/:train_id/update', AdminMiddleware, async (req, res)
         res.status(500).send({ err: 'Internal server error' });
     }
 });
+Train_Route.get('/api/userbooking', UserMiddleware, async (req, res) => {
+    const user_id =req.user; 
 
+    try {
+        const userBookings = await Booking_model.find({ user_id: user_id });
+        res.status(200).json(userBookings);
+    } catch (error) {
+        console.error('Error fetching user bookings:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 function isValidDate(dateString) {
     const date = new Date(dateString);
