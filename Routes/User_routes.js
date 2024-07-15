@@ -73,5 +73,9 @@ User_Router.post('/api/login', async (req, res) => {
         res.status(500).send({ err: 'Internal server error' });
     }
 });
+User_Router.post('api/logout',(req,res)=>{
+    res.clearCookie('railway_token', { httpOnly: true, secure: true });
+    res.status(200).send({ message: 'Logged out successfully' });
+})
 
 module.exports = User_Router;
