@@ -54,7 +54,7 @@ User_Router.post('/api/login', async (req, res) => {
             }
             if (!result) {
                 return res.status(400).send({
-                    "status": "Incorrect username/password provided. Please retry again", 
+                    "err": "Incorrect username/password provided. Please retry again", 
                     "status_code": 400
             });
             }
@@ -70,7 +70,7 @@ User_Router.post('/api/login', async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).send({ err: 'Internal server error' });
+        res.status(400).send({ err: 'Internal server error' });
     }
 });
 User_Router.post('/api/logout',(req,res)=>{
