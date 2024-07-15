@@ -95,20 +95,20 @@ Train_Route.post('/api/trains/:train_id/book', UserMiddleware, async (req, res) 
     session.startTransaction();
 
     try {
-        const train_exists = await Train_model.findById(train_id).session(session);
+        // Optimistic locking: find the train and lock the document for update
+        const train_exists = await Train_model.findOneAndUpdate(
+            { _id: train_id },
+            { $inc: { seat_capacity: -no_of_seats } },
+            { new: true, session, runValidators: true }
+        );
+
         if (!train_exists) {
             await session.abortTransaction();
             session.endSession();
             return res.status(404).send({ err: 'Train does not exist, please check the details again' });
         }
 
-        if (train_exists.seat_capacity <= 0) {
-            await session.abortTransaction();
-            session.endSession();
-            return res.status(404).send({ err: 'No seats are available' });
-        }
-
-        if (train_exists.seat_capacity < no_of_seats) {
+        if (train_exists.seat_capacity < 0) {
             await session.abortTransaction();
             session.endSession();
             return res.status(400).send({ err: 'Not enough seats available' });
@@ -116,7 +116,7 @@ Train_Route.post('/api/trains/:train_id/book', UserMiddleware, async (req, res) 
 
         // Calculate starting seat number based on total capacity
         const total_seats = 100; // Assume total seats is 100
-        const available_seats = train_exists.seat_capacity;
+        const available_seats = train_exists.seat_capacity + no_of_seats;
 
         // Calculate the first seat number to book
         const start_seat_number = total_seats - available_seats + 1;
@@ -126,9 +126,6 @@ Train_Route.post('/api/trains/:train_id/book', UserMiddleware, async (req, res) 
         for (let i = 0; i < no_of_seats; i++) {
             booked_seat_numbers.push(start_seat_number + i);
         }
-
-        // Update the seat capacity
-        train_exists.seat_capacity -= no_of_seats;
 
         // Create a new booking
         const newBooking = new Booking_model({
@@ -151,8 +148,6 @@ Train_Route.post('/api/trains/:train_id/book', UserMiddleware, async (req, res) 
 
         booking_user.bookings.push(newBooking._id);
         await booking_user.save({ session });
-
-        await train_exists.save({ session });
 
         await session.commitTransaction();
         session.endSession();
