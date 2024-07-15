@@ -7,7 +7,7 @@ require('dotenv').config();
 const cookieparser = require('cookie-parser')
 const app = express();
 app.use(cors({
-    origin: 'http://localhost:5173', // Replace with your frontend domain
+    origin: 'https://main--chimerical-salamander-abb348.netlify.app', // Replace with your frontend domain
     credentials: true
   }));
 app.use(express.json());
