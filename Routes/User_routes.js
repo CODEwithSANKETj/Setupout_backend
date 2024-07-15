@@ -60,7 +60,7 @@ User_Router.post('/api/login', async (req, res) => {
             }
             const isadmin = username==='Admin'
             const token = jwt.sign({ userId: user_exists._id,Admin:isadmin }, process.env.JWT_SECRET || 'masai', { expiresIn: '1h' });
-            res.cookie('railway_token',token, { httpOnly: true, secure: true })
+            res.cookie('railway_token',token, { httpOnly: true, secure: true,sameSite: 'none' })
             return res.status(200).send({
                 "status": "Login successful",
                 "status_code": 200,

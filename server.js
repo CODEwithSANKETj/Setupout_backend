@@ -6,7 +6,10 @@ const { Train_Route } = require('./Routes/Train_routes');
 require('dotenv').config();
 const cookieparser = require('cookie-parser')
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // Replace with your frontend domain
+    credentials: true
+  }));
 app.use(express.json());
 app.use(cookieparser())
 
