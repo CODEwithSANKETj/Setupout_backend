@@ -187,13 +187,6 @@ Train_Route.get('/api/bookings/:booking_id',UserMiddleware,async(req,res)=>{
     }
 })
 Train_Route.put('/api/train/:train_id/update', AdminMiddleware, async (req, res) => {
-    const { train_name, source, destination, seat_capacity, arrival_time_at_source, arrival_time_at_destination } = req.body;
-    
-    if (!train_name || !source || !destination || (!seat_capacity || typeof(seat_capacity) !== 'number') ||
-        (!arrival_time_at_source || !isValidDate(arrival_time_at_source)) || (!arrival_time_at_destination || !isValidDate(arrival_time_at_destination))) {
-        return res.status(400).send({ err: 'Please provide all required details' });
-    }
-    
     const train_id = req.params.train_id;
 
     if (!mongoose.isValidObjectId(train_id)) {
@@ -201,23 +194,29 @@ Train_Route.put('/api/train/:train_id/update', AdminMiddleware, async (req, res)
     }
 
     try {
+        // Find the existing train record
+        const existingTrain = await Train_model.findById(train_id);
+        if (!existingTrain) {
+            return res.status(404).send({ err: 'No such train found to update' });
+        }
+
+        // Create an update object based on provided fields
+        const updateFields = {};
+
+        if (req.body.train_name) updateFields.train_name = req.body.train_name;
+        if (req.body.source) updateFields.source = req.body.source;
+        if (req.body.destination) updateFields.destination = req.body.destination;
+        if (req.body.seat_capacity !== undefined) updateFields.seat_capacity = req.body.seat_capacity;
+        if (req.body.arrival_time_at_source) updateFields.arrival_time_at_source = req.body.arrival_time_at_source;
+        if (req.body.arrival_time_at_destination) updateFields.arrival_time_at_destination = req.body.arrival_time_at_destination;
+
+        // Update the train record with only provided fields
         const updatedTrain = await Train_model.findByIdAndUpdate(
             train_id,
-            {
-                train_name,
-                source,
-                destination,
-                seat_capacity,
-                arrival_time_at_source,
-                arrival_time_at_destination
-            },
+            updateFields,
             { new: true, runValidators: true }
         );
 
-        if (!updatedTrain) {
-            return res.status(404).send({ err: 'No such train found to update' });
-        }
-        
         res.send({
             message: 'Train details updated successfully',
             train: updatedTrain

@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken');
 
 function UserMiddleware(req, res, next) {
-    const token = req.cookies.railway_token; 
+    const token = req.cookies.railway_token;
     if (!token) {
         return res.status(401).send({ err: 'Access denied. No token provided.' });
     }
