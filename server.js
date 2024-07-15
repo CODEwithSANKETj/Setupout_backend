@@ -6,20 +6,9 @@ const { Train_Route } = require('./Routes/Train_routes');
 require('dotenv').config();
 const cookieparser = require('cookie-parser')
 const app = express();
-const allowedOrigins = [
-    'https://localhost:5173',
-    'https://another-allowed-origin.com', // Add more origins as needed
-  ];
-  
-  app.use(cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, origin); // Allow the request
-      } else {
-        callback(new Error('Not allowed by CORS')); // Reject the request
-      }
-    },
-    credentials: true,
+app.use(cors({
+    origin: 'https://main--chimerical-salamander-abb348.netlify.app', // Replace with your frontend domain
+    credentials: true
   }));
 app.use(express.json());
 app.use(cookieparser())
