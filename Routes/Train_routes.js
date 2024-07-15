@@ -237,7 +237,15 @@ Train_Route.get('/api/userbooking', UserMiddleware, async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
+Train_Route.get('/api/getall',async(req,res)=>{
+    try {
+        const alltrain = await Train_model.find();
+        res.status(200).json(alltrain);
+    } catch (error) {
+        console.error('Error fetching user bookings:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+})
 function isValidDate(dateString) {
     const date = new Date(dateString);
     return date instanceof Date && !isNaN(date);
